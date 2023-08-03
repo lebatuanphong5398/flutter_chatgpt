@@ -1,5 +1,5 @@
 import 'dart:async';
-import 'package:testapp/screens/chat_screen.dart';
+import 'package:first_app/screens/chat_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 

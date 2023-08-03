@@ -1,11 +1,11 @@
-import 'package:testapp/models/models.dart';
-import 'package:testapp/providers/models_provider.dart';
-import 'package:testapp/services/api_services.dart';
-import 'package:testapp/widgets/text_widget.dart';
+import 'package:first_app/models/models.dart';
+import 'package:first_app/providers/models_provider.dart';
+import 'package:first_app/services/api_services.dart';
+import 'package:first_app/widgets/text_widget.dart';
 import 'package:flutter/material.dart';
-import 'package:testapp/constants/constants.dart';
+import 'package:first_app/constants/constants.dart';
 import 'package:provider/provider.dart';
-import 'package:testapp/widgets/text_widget.dart';
+import 'package:first_app/widgets/text_widget.dart';
 
 class DropDownWidget extends StatefulWidget {
   const DropDownWidget({Key? key}) : super(key: key);

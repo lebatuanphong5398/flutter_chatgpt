@@ -1,13 +1,9 @@
 import 'package:google_fonts/google_fonts.dart';
-import 'package:testapp/providers/models_provider.dart';
-//import 'package:testapp/screens/keyGenerate_screen.dart';
-//import 'package:testapp/screens/splash_screen.dart';
+import 'package:first_app/providers/models_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:first_app/screens/home_screen.dart';
 import 'providers/chat_provider.dart';
-//import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:provider/provider.dart';
-import 'constants/constants.dart';
-import 'screens/chat_screen.dart';
 
 final theme = ThemeData(
   useMaterial3: true,
@@ -40,7 +36,7 @@ class MyApp extends StatelessWidget {
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
         theme: theme,
-        home: const ChatScreen(),
+        home: const HomeScreen(),
       ),
     );
   }

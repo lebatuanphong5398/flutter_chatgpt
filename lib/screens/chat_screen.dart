@@ -1,15 +1,15 @@
-import 'package:testapp/constants/constants.dart';
-import 'package:testapp/main.dart';
-import 'package:testapp/screens/keyGenerate_screen.dart';
-import 'package:testapp/services/api_services.dart';
-import 'package:testapp/services/assets_manager.dart';
-import 'package:testapp/widgets/chat_widget.dart';
-import 'package:testapp/widgets/text_widget.dart';
+import 'package:first_app/constants/constants.dart';
+import 'package:first_app/main.dart';
+import 'package:first_app/screens/keyGenerate_screen.dart';
+import 'package:first_app/services/api_services.dart';
+import 'package:first_app/services/assets_manager.dart';
+import 'package:first_app/widgets/chat_widget.dart';
+import 'package:first_app/widgets/text_widget.dart';
 import 'package:flutter/material.dart';
-import 'package:testapp/services/assets_manager.dart';
+import 'package:first_app/services/assets_manager.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'dart:developer';
-import 'package:testapp/services/services.dart';
+import 'package:first_app/services/services.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 

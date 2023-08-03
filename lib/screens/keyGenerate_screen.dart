@@ -1,9 +1,9 @@
 import 'dart:async';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:testapp/screens/chat_screen.dart';
+import 'package:first_app/screens/chat_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:testapp/constants/api_consts.dart';
+import 'package:first_app/constants/api_consts.dart';
 
 class GenerateKey extends StatefulWidget {
   const GenerateKey({super.key});

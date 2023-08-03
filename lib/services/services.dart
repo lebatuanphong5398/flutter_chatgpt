@@ -1,7 +1,7 @@
-import 'package:testapp/widgets/drop_down.dart';
+import 'package:first_app/widgets/drop_down.dart';
 import 'package:flutter/material.dart';
-import 'package:testapp/widgets/text_widget.dart';
-import 'package:testapp/constants/constants.dart';
+import 'package:first_app/widgets/text_widget.dart';
+import 'package:first_app/constants/constants.dart';
 
 class Services {
   static Future<void> showModalSheet({required BuildContext context}) async {

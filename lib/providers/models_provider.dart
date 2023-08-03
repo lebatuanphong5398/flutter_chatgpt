@@ -1,6 +1,6 @@
-import 'package:testapp/services/api_services.dart';
+import 'package:first_app/services/api_services.dart';
 import 'package:flutter/material.dart';
-import 'package:testapp/models/models.dart';
+import 'package:first_app/models/models.dart';
 
 class ModelsProvider with ChangeNotifier {
   String currentModel = "gpt-3.5-turbo";

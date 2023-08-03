@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 
-import 'package:testapp/models/models.dart';
-import 'package:testapp/services/api_services.dart';
+import 'package:first_app/models/models.dart';
+import 'package:first_app/services/api_services.dart';
 
 import '../models/chat_models.dart';
 

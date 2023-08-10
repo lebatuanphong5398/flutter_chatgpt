@@ -1,30 +1,25 @@
-import 'package:first_app/constants/constants.dart';
+import 'package:dart_openai/dart_openai.dart';
 import 'package:first_app/main.dart';
+import 'package:first_app/models/models.dart';
+import 'package:first_app/providers/api_key.dart';
+import 'package:first_app/providers/chat_provider.dart';
+import 'package:first_app/screens/home_screen.dart';
 import 'package:first_app/screens/keyGenerate_screen.dart';
+import 'package:first_app/screens/summary_screen.dart';
 import 'package:first_app/services/api_services.dart';
-import 'package:first_app/services/assets_manager.dart';
 import 'package:first_app/widgets/chat_widget.dart';
-import 'package:first_app/widgets/text_widget.dart';
 import 'package:flutter/material.dart';
-import 'package:first_app/services/assets_manager.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
-import 'dart:developer';
-import 'package:first_app/services/services.dart';
-import 'package:provider/provider.dart';
-import 'package:url_launcher/url_launcher.dart';
 
-import '../models/chat_models.dart';
-import '../providers/chat_provider.dart';
-import '../providers/models_provider.dart';
-
-class ChatScreen extends StatefulWidget {
+class ChatScreen extends ConsumerStatefulWidget {
   const ChatScreen({super.key});
 
   @override
-  State<ChatScreen> createState() => _ChatScreenState();
+  ConsumerState<ChatScreen> createState() => _ChatScreenState();
 }
 
-class _ChatScreenState extends State<ChatScreen> {
+class _ChatScreenState extends ConsumerState<ChatScreen> {
   bool isTyping = false;
   late TextEditingController textEditingController;
   late ScrollController _listScrollController;
@@ -46,10 +41,23 @@ class _ChatScreenState extends State<ChatScreen> {
     super.dispose();
   }
 
+  int _selectedPageIndex = 0;
+
+  void _selectPage(int index) {
+    setState(() {
+      _selectedPageIndex = index;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
-    final modelsProvider = Provider.of<ModelsProvider>(context);
-    final chatProvider = Provider.of<ChatProvider>(context);
+    // Widget activePage = ChatScreen();
+    // if (_selectedPageIndex == 1) {
+    //   activePage = SummaryScreen();
+    // }
+
+    //final modelsProvider = Provider.of<ModelsProvider>(context);
+    final chatprovider = ref.watch(chatProvider);
     return Scaffold(
       appBar: AppBar(
         elevation: 2,
@@ -63,7 +71,9 @@ class _ChatScreenState extends State<ChatScreen> {
             const SizedBox(
               width: 8,
             ),
-            const Text("ChatGPT"),
+            _selectedPageIndex == 0
+                ? const Text("ChatGPT")
+                : const Text("Q&A from documents"),
             const SizedBox(
               width: 50,
             ),
@@ -72,111 +82,126 @@ class _ChatScreenState extends State<ChatScreen> {
         titleTextStyle: Theme.of(context).textTheme.titleLarge!.copyWith(
               color: Theme.of(context).colorScheme.onBackground,
             ),
-
-        // actions: [
-        //   IconButton(
-        //     onPressed: () async {
-        //       await Services.showModalSheet(context: context);
-        //     },
-        //     icon: const Icon(Icons.more_vert_rounded, color: Colors.black),
-        //   ),
-        // ],
       ),
       drawer: const NavigationDrawerNew(),
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.only(top: 8.0),
-          child: Column(
-            children: [
-              Flexible(
-                child: ListView.builder(
-                    controller: _listScrollController,
-                    itemCount:
-                        chatProvider.getChatList.length, //chatList.length,
-                    itemBuilder: (context, index) {
-                      return Padding(
-                        padding: const EdgeInsets.only(top: 10.0),
-                        child: ChatWidget(
-                          msg: chatProvider
-                              .getChatList[index].msg, // chatList[index].msg,
-                          chatIndex: chatProvider.getChatList[index]
-                              .chatIndex, //chatList[index].chatIndex,
-                        ),
-                      );
-                    }),
-              ),
-              if (isTyping) ...[
-                const SpinKitThreeBounce(
-                  color: Color.fromARGB(255, 247, 242, 242),
-                  size: 18,
-                ),
-              ],
-              const SizedBox(
-                height: 15,
-              ),
-              Padding(
-                padding: const EdgeInsets.all(8),
-                child: Material(
-                  shape: RoundedRectangleBorder(
-                    side: BorderSide(
-                        color: Theme.of(context).colorScheme.onPrimary),
-                    borderRadius: BorderRadius.circular(10.0),
-                  ),
-                  color: Theme.of(context).colorScheme.onTertiaryContainer,
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Row(
-                      children: [
-                        Expanded(
-                            child: TextField(
-                          focusNode: focusNode,
-                          style: Theme.of(context).textTheme.bodyLarge,
-                          controller: textEditingController,
-                          onSubmitted: (value) async {
-                            await sendMessageFCT(
-                                modelsProvider: modelsProvider,
-                                chatProvider: chatProvider);
-                          },
-                          decoration: InputDecoration.collapsed(
-                            hintText: "Ask me anything!",
-                            hintStyle:
-                                Theme.of(context).textTheme.bodyLarge!.copyWith(
-                                      color: Theme.of(context)
-                                          .colorScheme
-                                          .onSecondary
-                                          .withOpacity(0.3),
-                                    ),
-                          ),
-                        )),
-                        IconButton(
-                          onPressed: () async {
-                            await sendMessageFCT(
-                                modelsProvider: modelsProvider,
-                                chatProvider: chatProvider);
-                          },
-                          icon: Icon(
-                            Icons.send,
-                            color: Theme.of(context).colorScheme.onPrimary,
-                          ),
-                        )
-                      ],
+      body: _selectedPageIndex == 0
+          ? SafeArea(
+              child: Padding(
+                padding: const EdgeInsets.only(top: 8.0),
+                child: Column(
+                  children: [
+                    Flexible(
+                      child: ListView.builder(
+                          controller: _listScrollController,
+                          itemCount: chatprovider.length, //chatList.length,
+                          itemBuilder: (context, index) {
+                            return Padding(
+                              padding: const EdgeInsets.only(top: 10.0),
+                              child: ChatWidget(
+                                msg: chatprovider[index].msg,
+                                // chatList[index].msg,
+                                chatIndex: chatprovider[index].chatIndex,
+                                //chatList[index].chatIndex,
+                              ),
+                            );
+                          }),
                     ),
-                  ),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Text(
-                  'Free Research Preview. Our goal is to make AI systems more natural and safe to interact with. Your feedback will help us improve.',
-                  style: Theme.of(context).textTheme.labelSmall!.copyWith(
-                        color: Theme.of(context).colorScheme.onPrimaryContainer,
+                    if (isTyping) ...[
+                      const SpinKitThreeBounce(
+                        color: Color.fromARGB(255, 247, 242, 242),
+                        size: 18,
                       ),
-                  textAlign: TextAlign.center,
+                    ],
+                    const SizedBox(
+                      height: 15,
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(8),
+                      child: Material(
+                        shape: RoundedRectangleBorder(
+                          side: BorderSide(
+                              color: Theme.of(context).colorScheme.onPrimary),
+                          borderRadius: BorderRadius.circular(10.0),
+                        ),
+                        color:
+                            Theme.of(context).colorScheme.onTertiaryContainer,
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Row(
+                            children: [
+                              Expanded(
+                                  child: TextField(
+                                focusNode: focusNode,
+                                style: Theme.of(context).textTheme.bodyLarge,
+                                controller: textEditingController,
+                                onSubmitted: (value) async {
+                                  await sendMessageFCT();
+                                },
+                                decoration: InputDecoration.collapsed(
+                                  hintText: "Ask me anything!",
+                                  hintStyle: Theme.of(context)
+                                      .textTheme
+                                      .bodyLarge!
+                                      .copyWith(
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .onSecondary
+                                            .withOpacity(0.3),
+                                      ),
+                                ),
+                              )),
+                              IconButton(
+                                onPressed: () async {
+                                  await sendMessageFCT();
+                                },
+                                icon: Icon(
+                                  Icons.send,
+                                  color:
+                                      Theme.of(context).colorScheme.onPrimary,
+                                ),
+                              )
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 8),
+                      child: Text(
+                        'Free Research Preview. Our goal is to make AI systems more natural and safe to interact with. Your feedback will help us improve.',
+                        style: Theme.of(context).textTheme.labelSmall!.copyWith(
+                              color: Theme.of(context)
+                                  .colorScheme
+                                  .onPrimaryContainer,
+                            ),
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                  ],
                 ),
               ),
-            ],
+            )
+          : const SummaryScreen(),
+      bottomNavigationBar: BottomNavigationBar(
+        onTap: _selectPage,
+        currentIndex: _selectedPageIndex,
+        backgroundColor: Theme.of(context).colorScheme.outlineVariant,
+        items: [
+          BottomNavigationBarItem(
+            icon: Image.asset(
+              'images/chatIcon.png',
+              width: 20,
+            ),
+            label: 'Chat',
           ),
-        ),
+          BottomNavigationBarItem(
+            icon: Image.asset(
+              'images/loupe.png',
+              width: 20,
+            ),
+            label: 'Summary',
+          ),
+        ],
       ),
     );
   }
@@ -188,9 +213,7 @@ class _ChatScreenState extends State<ChatScreen> {
         curve: Curves.easeOut);
   }
 
-  Future<void> sendMessageFCT(
-      {required ModelsProvider modelsProvider,
-      required ChatProvider chatProvider}) async {
+  Future<void> sendMessageFCT() async {
     if (isTyping) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -217,16 +240,18 @@ class _ChatScreenState extends State<ChatScreen> {
       String msg = textEditingController.text;
       setState(() {
         isTyping = true;
-        chatProvider.addUserMessage(msg: msg);
+        ref.watch(chatProvider.notifier).addUserMessage(msg: msg);
         textEditingController.clear();
         focusNode.unfocus();
       });
-      await chatProvider.sendMessageAndGetAnswers(
-          msg: msg, chosenModelId: modelsProvider.getCurrentModel);
-      // chatList.addAll(await ApiService.sendMessage(
-      //   message: textEditingController.text,
-      //   modelId: modelsProvider.getCurrentModel,
-      // ));
+      // final List<ModelsModel> models = await ApiService.getModels();
+      // for (var model in models) {
+      //   print(model.root); // Đây là tên của model
+      // }
+      OpenAI.apiKey = ref.watch(apiKeyProvider);
+      await ref
+          .watch(chatProvider.notifier)
+          .sendMessageAndGetAnswers(msg: msg, chosenModelId: "gpt-3.5-turbo");
       setState(() {});
     } catch (error) {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
@@ -306,20 +331,20 @@ class NavigationDrawerNew extends StatelessWidget {
             ),
             ListTile(
               leading: Icon(
-                Icons.key_outlined,
+                Icons.logout,
                 size: 26,
                 color: Theme.of(context).colorScheme.onBackground,
               ),
               title: Text(
-                'Generate a Key',
+                'Log out',
                 style: Theme.of(context).textTheme.titleSmall!.copyWith(
                       color: Theme.of(context).colorScheme.onBackground,
                       fontSize: 24,
                     ),
               ),
               onTap: () {
-                Navigator.of(context).push(MaterialPageRoute(
-                    builder: (context) => const GenerateKey()));
+                Navigator.of(context).pushReplacement(MaterialPageRoute(
+                    builder: (context) => const HomeScreen()));
               },
             ),
             ListTile(
@@ -336,8 +361,8 @@ class NavigationDrawerNew extends StatelessWidget {
                     ),
               ),
               onTap: () {
-                Navigator.of(context).push(MaterialPageRoute(
-                    builder: (context) => const GenerateKey()));
+                Navigator.of(context).pushReplacement(MaterialPageRoute(
+                    builder: (context) => const HomeScreen()));
               },
             ),
           ],

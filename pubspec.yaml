@@ -45,6 +45,11 @@ dependencies:
   animated_text_kit: ^4.2.2
   lottie: ^2.5.0
   google_fonts: ^5.1.0
+  dart_openai: ^4.0.0
+  flutter_riverpod: ^2.3.6
+  langchain: ^0.0.5
+  langchain_openai: ^0.0.5
+  file_picker: ^5.3.3
 
 dev_dependencies:
   flutter_test:
@@ -77,6 +82,9 @@ flutter:
     - assets/images/person.png
     - assets/images/chatbox.png
     - assets/images/brycenvietnamlogo.png
+    - assets/images/chatIcon.png
+    - assets/images/loupe.png
+    - assets/images/ok.txt
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware

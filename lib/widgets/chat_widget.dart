@@ -31,7 +31,7 @@ class ChatWidget extends StatelessWidget {
                       width: 10.0,
                     ),
                     Expanded(
-                      child: chatIndex != 0
+                      child: chatIndex == 0
                           ? Text(msg,
                               style: Theme.of(context)
                                   .textTheme

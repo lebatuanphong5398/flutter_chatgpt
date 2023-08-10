@@ -54,7 +54,7 @@ class _SummaryScreenState extends State<SummaryScreen> {
         documents: textsWithSources,
         embeddings: embeddings,
       );
-      print(docSearch.memoryVectors.length);
+      //print(docSearch.memoryVectors.last.content);
       final qaChain = OpenAIQAWithSourcesChain(llm: llm);
       final docPrompt = PromptTemplate.fromTemplate(
         '''Hãy sử dụng nội dung của tôi đã cung cấp trong file text để trả lời các câu hỏi bằng tiếng Việt.\nLưu ý: Nếu không tìm thấy câu trả lời trong nội dung đã cung cấp, hãy thông báo "Thông tin không có trong tài liệu đã cung cung cấp ".
@@ -71,10 +71,12 @@ class _SummaryScreenState extends State<SummaryScreen> {
         retriever: docSearch.asRetriever(),
         combineDocumentsChain: finalQAChain,
       );
-      const query = 'Bác Hồ là ai';
+
+      const query = 'Đoạn văn trên nói về vấn đề gì?';
       final res = await retrievalQA(query);
 
       print("---------------${res['statusCode']}");
+      print(res["result"]);
       //print("----------------$res");
     } catch (e) {
       print(e.toString());
@@ -140,7 +142,7 @@ class _SummaryScreenState extends State<SummaryScreen> {
                     ;
                   },
                   child: const Text(
-                    'Select File',
+                    'Không cần làm gì chỉ cần nhấp vào đây',
                   ),
                 )
               ],

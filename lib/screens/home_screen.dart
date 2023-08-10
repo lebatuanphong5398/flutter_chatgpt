@@ -208,6 +208,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 keyCodeStatus = await isCorrectKey(_controller.text);
                 if (keyCodeStatus == 200) {
                   await removeOpenAIKey();
+                  Timer(const Duration(seconds: 5), () {});
                   _addOpenAIKey(_controller.text);
                   _formKey.currentState!.save();
                   ScaffoldMessenger.of(context).clearSnackBars();

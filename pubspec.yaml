@@ -50,6 +50,12 @@ dependencies:
   langchain: ^0.0.5
   langchain_openai: ^0.0.5
   file_picker: ^5.3.3
+  firebase_core: ^2.15.0
+  firebase_storage: ^11.2.5
+  cloud_firestore: ^4.8.4
+  uuid: ^3.0.7
+  image_picker: ^1.0.2
+  flutter_downloader: ^1.11.1
 
 dev_dependencies:
   flutter_test:

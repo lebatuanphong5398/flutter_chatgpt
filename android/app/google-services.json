@@ -1,0 +1,83 @@
+{
+  "project_info": {
+    "project_number": "599326853520",
+    "firebase_url": "https://flutter-brycen-chat-app-default-rtdb.firebaseio.com",
+    "project_id": "flutter-brycen-chat-app",
+    "storage_bucket": "flutter-brycen-chat-app.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:599326853520:android:264ccabe953f5c2c0f4b15",
+        "android_client_info": {
+          "package_name": "com.example.chat_bot"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "599326853520-sj52la3onm109v4mvr3sbtgsk3i2e9lg.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCFr0zVYYikd-Jpi7DLE1cbvC6fQqj9ICk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "599326853520-sj52la3onm109v4mvr3sbtgsk3i2e9lg.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "599326853520-vilbjjc007bmi1do29si4eld35pfa95v.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.chatBot"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:599326853520:android:37304e352c72f6160f4b15",
+        "android_client_info": {
+          "package_name": "com.example.first_app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "599326853520-sj52la3onm109v4mvr3sbtgsk3i2e9lg.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCFr0zVYYikd-Jpi7DLE1cbvC6fQqj9ICk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "599326853520-sj52la3onm109v4mvr3sbtgsk3i2e9lg.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "599326853520-vilbjjc007bmi1do29si4eld35pfa95v.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.chatBot"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

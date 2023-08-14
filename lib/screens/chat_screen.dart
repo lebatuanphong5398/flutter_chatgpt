@@ -1,16 +1,20 @@
 import 'package:dart_openai/dart_openai.dart';
-import 'package:first_app/main.dart';
-import 'package:first_app/models/models.dart';
 import 'package:first_app/providers/api_key.dart';
 import 'package:first_app/providers/chat_provider.dart';
+import 'package:first_app/providers/image_provider.dart';
+import 'package:first_app/providers/list_chat.dart';
 import 'package:first_app/screens/home_screen.dart';
-import 'package:first_app/screens/keyGenerate_screen.dart';
+import 'package:first_app/screens/image_screen.dart';
 import 'package:first_app/screens/summary_screen.dart';
-import 'package:first_app/services/api_services.dart';
 import 'package:first_app/widgets/chat_widget.dart';
+import 'package:first_app/widgets/navigationDrawerNew.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:uuid/uuid.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+
+const uuid = Uuid();
 
 class ChatScreen extends ConsumerStatefulWidget {
   const ChatScreen({super.key});
@@ -24,6 +28,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
   late TextEditingController textEditingController;
   late ScrollController _listScrollController;
   late FocusNode focusNode;
+  String chatid = uuid.v4();
 
   @override
   void initState() {
@@ -57,7 +62,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
     // }
 
     //final modelsProvider = Provider.of<ModelsProvider>(context);
-    final chatprovider = ref.watch(chatProvider);
+    var chatprovider = ref.watch(chatProvider);
     return Scaffold(
       appBar: AppBar(
         elevation: 2,
@@ -65,7 +70,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Image.asset(
-              'images/openai_logo.jpg',
+              'assets/images/openai_logo.jpg',
               width: 20,
             ),
             const SizedBox(
@@ -73,7 +78,9 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
             ),
             _selectedPageIndex == 0
                 ? const Text("ChatGPT")
-                : const Text("Q&A from documents"),
+                : _selectedPageIndex == 1
+                    ? const Text("Q&A documents")
+                    : const Text("Images with AI"),
             const SizedBox(
               width: 50,
             ),
@@ -82,6 +89,21 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
         titleTextStyle: Theme.of(context).textTheme.titleLarge!.copyWith(
               color: Theme.of(context).colorScheme.onBackground,
             ),
+        actions: [
+          IconButton(
+            onPressed: () {
+              chatid = uuid.v4();
+              setState(() {
+                ref.watch(chatProvider.notifier).refreshChat();
+                ref.watch(imageProvider.notifier).refreshChat();
+              });
+            },
+            icon: Icon(
+              Icons.add,
+              color: Theme.of(context).colorScheme.primary,
+            ),
+          ),
+        ],
       ),
       drawer: const NavigationDrawerNew(),
       body: _selectedPageIndex == 0
@@ -181,7 +203,9 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                 ),
               ),
             )
-          : const SummaryScreen(),
+          : _selectedPageIndex == 1
+              ? const SummaryScreen()
+              : const ImageScreen(),
       bottomNavigationBar: BottomNavigationBar(
         onTap: _selectPage,
         currentIndex: _selectedPageIndex,
@@ -189,17 +213,24 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
         items: [
           BottomNavigationBarItem(
             icon: Image.asset(
-              'images/chatIcon.png',
+              'assets/images/chatIcon.png',
               width: 20,
             ),
             label: 'Chat',
           ),
           BottomNavigationBarItem(
             icon: Image.asset(
-              'images/loupe.png',
+              'assets/images/loupe.png',
               width: 20,
             ),
             label: 'Summary',
+          ),
+          BottomNavigationBarItem(
+            icon: Image.asset(
+              'assets/images/openai_logo.jpg',
+              width: 20,
+            ),
+            label: 'Images with AI',
           ),
         ],
       ),
@@ -209,7 +240,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
   void scrollListToEND() {
     _listScrollController.animateTo(
         _listScrollController.position.maxScrollExtent,
-        duration: const Duration(seconds: 2),
+        duration: const Duration(milliseconds: 300),
         curve: Curves.easeOut);
   }
 
@@ -240,18 +271,16 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
       String msg = textEditingController.text;
       setState(() {
         isTyping = true;
-        ref.watch(chatProvider.notifier).addUserMessage(msg: msg);
+        ref
+            .watch(chatProvider.notifier)
+            .addUserMessage(msg: msg, chatid: chatid);
         textEditingController.clear();
         focusNode.unfocus();
       });
-      // final List<ModelsModel> models = await ApiService.getModels();
-      // for (var model in models) {
-      //   print(model.root); // Đây là tên của model
-      // }
+
       OpenAI.apiKey = ref.watch(apiKeyProvider);
-      await ref
-          .watch(chatProvider.notifier)
-          .sendMessageAndGetAnswers(msg: msg, chosenModelId: "gpt-3.5-turbo");
+      await ref.watch(chatProvider.notifier).sendMessageAndGetAnswers(
+          msg: msg, chosenModelId: "gpt-3.5-turbo", chatid: chatid);
       setState(() {});
     } catch (error) {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
@@ -266,108 +295,5 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
         isTyping = false;
       });
     }
-  }
-}
-
-class NavigationDrawerNew extends StatelessWidget {
-  const NavigationDrawerNew({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Drawer(
-      child: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            DrawerHeader(
-              padding: const EdgeInsets.all(10),
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [
-                    Theme.of(context).colorScheme.primaryContainer,
-                    Theme.of(context)
-                        .colorScheme
-                        .primaryContainer
-                        .withOpacity(0.8),
-                  ],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                ),
-              ),
-              child: Row(
-                children: [
-                  Icon(
-                    Icons.chat_bubble,
-                    size: 48,
-                    color: Theme.of(context).colorScheme.primary,
-                  ),
-                  const SizedBox(width: 18),
-                  Text(
-                    'Chatbox menu!',
-                    style: Theme.of(context).textTheme.titleLarge!.copyWith(
-                          color: Theme.of(context).colorScheme.primary,
-                        ),
-                  ),
-                ],
-              ),
-            ),
-            ListTile(
-              leading: Icon(
-                Icons.chat_outlined,
-                size: 26,
-                color: Theme.of(context).colorScheme.onBackground,
-              ),
-              title: Text(
-                'Chat with me',
-                style: Theme.of(context).textTheme.titleSmall!.copyWith(
-                      color: Theme.of(context).colorScheme.onBackground,
-                      fontSize: 24,
-                    ),
-              ),
-              onTap: () {
-                Navigator.of(context).pushReplacement(MaterialPageRoute(
-                    builder: (context) => const ChatScreen()));
-              },
-            ),
-            ListTile(
-              leading: Icon(
-                Icons.logout,
-                size: 26,
-                color: Theme.of(context).colorScheme.onBackground,
-              ),
-              title: Text(
-                'Log out',
-                style: Theme.of(context).textTheme.titleSmall!.copyWith(
-                      color: Theme.of(context).colorScheme.onBackground,
-                      fontSize: 24,
-                    ),
-              ),
-              onTap: () {
-                Navigator.of(context).pushReplacement(MaterialPageRoute(
-                    builder: (context) => const HomeScreen()));
-              },
-            ),
-            ListTile(
-              leading: Icon(
-                Icons.key_outlined,
-                size: 26,
-                color: Theme.of(context).colorScheme.onBackground,
-              ),
-              title: Text(
-                'giu cho',
-                style: Theme.of(context).textTheme.titleSmall!.copyWith(
-                      color: Theme.of(context).colorScheme.onBackground,
-                      fontSize: 24,
-                    ),
-              ),
-              onTap: () {
-                Navigator.of(context).pushReplacement(MaterialPageRoute(
-                    builder: (context) => const HomeScreen()));
-              },
-            ),
-          ],
-        ),
-      ),
-    );
   }
 }

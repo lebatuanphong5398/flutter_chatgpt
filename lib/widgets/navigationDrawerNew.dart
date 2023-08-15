@@ -1,13 +1,17 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:first_app/providers/chat_provider.dart';
+import 'package:first_app/providers/image_provider.dart';
 import 'package:first_app/screens/chat_screen.dart';
 import 'package:first_app/screens/home_screen.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:get/get.dart';
 
 class NavigationDrawerNew extends ConsumerStatefulWidget {
-  const NavigationDrawerNew({super.key});
+  const NavigationDrawerNew({super.key, required this.selectPage});
 
+  final void Function(int) selectPage;
   @override
   ConsumerState<NavigationDrawerNew> createState() =>
       _NavigationDrawerNewState();
@@ -17,6 +21,7 @@ class _NavigationDrawerNewState extends ConsumerState<NavigationDrawerNew> {
   @override
   Widget build(BuildContext context) {
     dynamic loadedMessages;
+    dynamic loadedimages;
     return Drawer(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -108,7 +113,7 @@ class _NavigationDrawerNewState extends ConsumerState<NavigationDrawerNew> {
                               .copyWith(
                                 color:
                                     Theme.of(context).colorScheme.onBackground,
-                                fontSize: 24,
+                                fontSize: 16,
                               ),
                         ),
                         onTap: () async {
@@ -125,6 +130,86 @@ class _NavigationDrawerNewState extends ConsumerState<NavigationDrawerNew> {
                             FirebaseFirestore.instance
                                 .collection('conversations')
                                 .doc(loadedMessages[index].id)
+                                .delete();
+                          },
+                        ),
+                      );
+                    },
+                  ),
+                );
+              }),
+          const Divider(),
+          StreamBuilder(
+              stream: FirebaseFirestore.instance
+                  .collection('images')
+                  .orderBy(
+                    'createdAt',
+                    descending: true,
+                  )
+                  .snapshots(),
+              builder: (ctx, chatSnapshots) {
+                if (chatSnapshots.connectionState == ConnectionState.waiting) {
+                  return const Center(
+                    child: CircularProgressIndicator(),
+                  );
+                }
+
+                if (!chatSnapshots.hasData ||
+                    chatSnapshots.data!.docs.isEmpty) {
+                  return Expanded(
+                    child: Center(
+                      child: Text(
+                        'No history image.',
+                        style: Theme.of(context).textTheme.titleSmall!.copyWith(
+                              color: Theme.of(context).colorScheme.onBackground,
+                              fontSize: 24,
+                            ),
+                      ),
+                    ),
+                  );
+                }
+
+                loadedimages = chatSnapshots.data!.docs;
+
+                return Expanded(
+                  child: ListView.builder(
+                    padding: const EdgeInsets.only(
+                      bottom: 40,
+                      left: 13,
+                      right: 13,
+                    ),
+                    itemCount: loadedimages.length,
+                    itemBuilder: (ctx, index) {
+                      return ListTile(
+                        leading: Icon(
+                          Icons.chat_outlined,
+                          size: 26,
+                          color: Theme.of(context).colorScheme.onBackground,
+                        ),
+                        title: Text(
+                          'image history',
+                          style: Theme.of(context)
+                              .textTheme
+                              .titleSmall!
+                              .copyWith(
+                                color:
+                                    Theme.of(context).colorScheme.onBackground,
+                                fontSize: 16,
+                              ),
+                        ),
+                        onTap: () async {
+                          await ref
+                              .watch(imageProvider.notifier)
+                              .getchatlist(loadedimages[index].id);
+                          widget.selectPage(2);
+                          Navigator.of(context).pop();
+                        },
+                        trailing: IconButton(
+                          icon: const Icon(Icons.delete),
+                          onPressed: () {
+                            FirebaseFirestore.instance
+                                .collection('images')
+                                .doc(loadedimages[index].id)
                                 .delete();
                           },
                         ),

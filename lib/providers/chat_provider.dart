@@ -1,6 +1,5 @@
 import 'package:first_app/models/chat_models.dart';
 import 'package:first_app/services/api_services.dart';
-import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 

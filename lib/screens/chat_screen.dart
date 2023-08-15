@@ -92,8 +92,8 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
         actions: [
           IconButton(
             onPressed: () {
-              chatid = uuid.v4();
               setState(() {
+                chatid = uuid.v4();
                 ref.watch(chatProvider.notifier).refreshChat();
                 ref.watch(imageProvider.notifier).refreshChat();
               });
@@ -105,7 +105,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
           ),
         ],
       ),
-      drawer: const NavigationDrawerNew(),
+      drawer: NavigationDrawerNew(selectPage: _selectPage),
       body: _selectedPageIndex == 0
           ? SafeArea(
               child: Padding(

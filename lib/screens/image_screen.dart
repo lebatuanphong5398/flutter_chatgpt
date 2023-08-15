@@ -21,68 +21,6 @@ class ImageScreen extends ConsumerStatefulWidget {
 }
 
 class _ImageScreenState extends ConsumerState<ImageScreen> {
-  // final _form = GlobalKey<FormState>();
-
-  // var _isLogin = true;
-  // var _enteredEmail = '';
-  // var _enteredPassword = '';
-  // var _enteredUsername = '';
-  // File? _selectedImage;
-  // var _isAuthenticating = false;
-
-  // void _submit() async {
-  //   final isValid = _form.currentState!.validate();
-
-  //   if (!isValid || !_isLogin && _selectedImage == null) {
-  //     // show error message ...
-  //     return;
-  //   }
-
-  //   _form.currentState!.save();
-
-  //   try {
-  //     setState(() {
-  //       _isAuthenticating = true;
-  //     });
-  //     if (_isLogin) {
-  //       final userCredentials = await _firebase.signInWithEmailAndPassword(
-  //           email: _enteredEmail, password: _enteredPassword);
-  //     } else {
-  //       final userCredentials = await _firebase.createUserWithEmailAndPassword(
-  //           email: _enteredEmail, password: _enteredPassword);
-
-  //       final storageRef = FirebaseStorage.instance
-  //           .ref()
-  //           .child('user_images')
-  //           .child('${userCredentials.user!.uid}.jpg');
-
-  //       await storageRef.putFile(_selectedImage!);
-  //       final imageUrl = await storageRef.getDownloadURL();
-
-  //       await FirebaseFirestore.instance
-  //           .collection('users')
-  //           .doc(userCredentials.user!.uid)
-  //           .set({
-  //         'username': _enteredUsername,
-  //         'email': _enteredEmail,
-  //         'image_url': imageUrl,
-  //       });
-  //     }
-  //   } on FirebaseAuthException catch (error) {
-  //     if (error.code == 'email-already-in-use') {
-  //       // ...
-  //     }
-  //     ScaffoldMessenger.of(context).clearSnackBars();
-  //     ScaffoldMessenger.of(context).showSnackBar(
-  //       SnackBar(
-  //         content: Text(error.message ?? 'Authentication failed.'),
-  //       ),
-  //     );
-  //     setState(() {
-  //       _isAuthenticating = false;
-  //     });
-  //   }
-  // }
   bool isTyping = false;
   late TextEditingController textEditingController;
   late ScrollController _listScrollController;

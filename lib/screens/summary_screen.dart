@@ -15,7 +15,7 @@ class SummaryScreen extends StatefulWidget {
 
 class _SummaryScreenState extends State<SummaryScreen> {
   PlatformFile? file;
-  dynamic retrievalQA;
+  late RetrievalQAChain retrievalQA;
   dynamic embeddings;
   dynamic textsWithSources;
   dynamic docSearch;
@@ -33,7 +33,7 @@ class _SummaryScreenState extends State<SummaryScreen> {
     }
   }
 
-  void loaderFile() async {
+  Future<RetrievalQAChain> loadFile() async {
     try {
       var loader = TextLoader(file!.path!);
       loader.load().then((value) {
@@ -49,85 +49,87 @@ class _SummaryScreenState extends State<SummaryScreen> {
             );
           },
         ).toList();
-        print(textsWithSources);
       });
     } catch (e) {
       print(e.toString());
     }
-  }
 
-  void getChatResponse() async {
-    try {
-      embeddings = OpenAIEmbeddings(apiKey: apiKey);
-      var docSearch = await MemoryVectorStore.fromDocuments(
-              documents: textsWithSources, embeddings: embeddings)
-          .then((value) {
-        print('docSearch:_________________ ${value.memoryVectors.first}');
-        return value;
-      }).catchError((err) {
-        setState(() {
-          _responsedAnswer = err.toString();
-        });
-        return MemoryVectorStore(embeddings: embeddings);
+    embeddings = OpenAIEmbeddings(apiKey: apiKey);
+    //print(textsWithSources);
+    var docSearch = await MemoryVectorStore.fromDocuments(
+            documents: textsWithSources, embeddings: embeddings)
+        .then((value) {
+      print('docSearch:_________________ ${value.memoryVectors.first}');
+      return value;
+    }).catchError((err) {
+      setState(() {
+        _responsedAnswer = err.toString();
       });
+      return MemoryVectorStore(embeddings: embeddings);
+    });
 
-      final llm =
-          ChatOpenAI(apiKey: apiKey, model: 'gpt-3.5-turbo', temperature: 0.5);
-      final qaChain = OpenAIQAWithSourcesChain(llm: llm);
-      final docPrompt = PromptTemplate.fromTemplate(
-        '''Hãy sử dụng nội dung của tôi đã cung cấp trong file text để trả lời các câu hỏi bằng tiếng Việt.\nLưu ý: Nếu không tìm thấy câu trả lời trong nội dung đã cung cấp, hãy thông báo "Thông tin không có trong tài liệu đã cung cung cấp ".
-        Nếu câu hỏi là các câu tương tự như: 'Xin chào', 'Hello'... hãy phản hồi: 'Xin chào, hãy đặt các câu hỏi liên quan đến tài liệu đã cung cấp.'.
+    final llm =
+        ChatOpenAI(apiKey: apiKey, model: 'gpt-3.5-turbo', temperature: 0.5);
+    final qaChain = OpenAIQAWithSourcesChain(llm: llm);
+    final docPrompt = PromptTemplate.fromTemplate(
+      '''You will be given a text document\n Answer based on the language of the question \n If you cannot find an answer related to the text, answer:"Không có dữ liệu về câu hỏi trong tài liệu!". '
         .\ncontent: {page_content}\nSource: {source}
         ''',
-      );
-      final finalQAChain = StuffDocumentsChain(
-        llmChain: qaChain,
-        documentPrompt: docPrompt,
-      );
-      print('Hello_retrievalQA');
+    );
+    final finalQAChain = StuffDocumentsChain(
+      llmChain: qaChain,
+      documentPrompt: docPrompt,
+    );
 
-      final retrievalQA = RetrievalQAChain(
-        retriever: docSearch.asRetriever(),
-        combineDocumentsChain: finalQAChain,
-      );
-
-      final res = await retrievalQA("Bác Hồ là ai");
-      if (res['statusCode'] == 429) {
-        _responsedAnswer =
-            'Bạn đã giữ quá nhiều yêu cầu(Tối Tối đa 3 yêu cầu/phút), hãy thử lại sau 20s.';
-        print("__________$_responsedAnswer");
-        //chatConversation.add({'Ai': _responsedAnswer.trim()});
-        //isLoading = false;
-      } else {
-        setState(() {
-          print(res.toString());
-          _responsedAnswer = res['result'].toString();
-          print("__________$_responsedAnswer");
-          //chatConversation.add({'Ai': _responsedAnswer.trim()});
-          //isLoading = false;
-        });
-      }
-    } catch (err) {
-      {
-        if (err.toString().contains('statusCode: 429')) {
-          setState(() {
-            _responsedAnswer =
-                'Tài khoản của bạn bị giới hạn 3 req/min, hãy nâng cấp hoặc thử lại sau 20s.';
-            // chatConversation.add({'Ai': _responsedAnswer.trim()});
-            // isLoading = false;
-          });
-        } else {
-          setState(() {
-            _responsedAnswer =
-                'Xin chào, hãy đặt các câu hỏi liên quan đến tài liệu đã cung cấp. ${err.toString()}';
-            // chatConversation.add({'Ai': _responsedAnswer.trim()});
-            // isLoading = false;
-          });
-        }
-      }
-    }
-    print("__________$_responsedAnswer");
+    return RetrievalQAChain(
+      retriever: docSearch.asRetriever(),
+      combineDocumentsChain: finalQAChain,
+    );
   }
+
+  Future getResponsive() async {
+    print("--------${retrievalQA.memory}");
+    final res = await retrievalQA("câu chuyện kể về ai");
+    print("______________________$res");
+    print("---------------${res['statusCode']}");
+    print(res["result"]);
+  }
+  //   final res = await retrievalQA("Bác Hồ là ai");
+  //   if (res['statusCode'] == 429) {
+  //     _responsedAnswer =
+  //         'Bạn đã giữ quá nhiều yêu cầu(Tối Tối đa 3 yêu cầu/phút), hãy thử lại sau 20s.';
+  //     print("__________$_responsedAnswer");
+  //     //chatConversation.add({'Ai': _responsedAnswer.trim()});
+  //     //isLoading = false;
+  //   } else {
+  //     setState(() {
+  //       print(res.toString());
+  //       _responsedAnswer = res['result'].toString();
+  //       print("__________$_responsedAnswer");
+  //       //chatConversation.add({'Ai': _responsedAnswer.trim()});
+  //       //isLoading = false;
+  //     });
+  //   }
+  // } catch (err) {
+  //   {
+  //     if (err.toString().contains('statusCode: 429')) {
+  //       setState(() {
+  //         _responsedAnswer =
+  //             'Tài khoản của bạn bị giới hạn 3 req/min, hãy nâng cấp hoặc thử lại sau 20s.';
+  //         // chatConversation.add({'Ai': _responsedAnswer.trim()});
+  //         // isLoading = false;
+  //       });
+  //     } else {
+  //       setState(() {
+  //         _responsedAnswer =
+  //             'Xin chào, hãy đặt các câu hỏi liên quan đến tài liệu đã cung cấp. ${err.toString()}';
+  //         // chatConversation.add({'Ai': _responsedAnswer.trim()});
+  //         // isLoading = false;
+  //       });
+  //     }
+  //   }
+  // }
+  // print("__________$_responsedAnswer");
 
   // void _filePicker() async {
   //   FilePickerResult? result = await FilePicker.platform.pickFiles();
@@ -222,9 +224,8 @@ class _SummaryScreenState extends State<SummaryScreen> {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 ElevatedButton(
-                  onPressed: () {
+                  onPressed: () async {
                     _filePicker();
-                    loaderFile();
                   },
                   child: Text(
                     'Select File',
@@ -250,8 +251,16 @@ class _SummaryScreenState extends State<SummaryScreen> {
                                 .onTertiaryContainer),
                       ),
                 ElevatedButton(
+                  onPressed: () async {
+                    retrievalQA = await loadFile();
+                  },
+                  child: const Text(
+                    'Không cần làm gì chỉ cần nhấp vào đây',
+                  ),
+                ),
+                ElevatedButton(
                   onPressed: () {
-                    getChatResponse();
+                    getResponsive();
                   },
                   child: const Text(
                     'Không cần làm gì chỉ cần nhấp vào đây',
@@ -265,26 +274,3 @@ class _SummaryScreenState extends State<SummaryScreen> {
     );
   }
 }
-
-
-
-
-// final llm = ChatOpenAI(
-//   apiKey: openaiApiKey,
-//   model: 'gpt-3.5-turbo-0613',
-//   temperature: 1,
-// );
-// final qaChain = OpenAIQAWithSourcesChain(llm: llm);
-// final docPrompt = PromptTemplate.fromTemplate(
-//   'Content: {page_content}\nSource: {source}',
-// );
-// final finalQAChain = StuffDocumentsChain(
-//   llmChain: qaChain,
-//   documentPrompt: docPrompt,
-// );
-// final retrievalQA = RetrievalQAChain(
-//   retriever: docSearch.asRetriever(),
-//   combineDocumentsChain: finalQAChain,
-// );
-// const query = 'What did President Biden say about Russia?';
-// final res = await retrievalQA(query);

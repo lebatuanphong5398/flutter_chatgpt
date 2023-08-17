@@ -57,6 +57,8 @@ After downloading this repository, you need to configure Firebase to save your d
 
 To set up Firebase for your project, you'll need the Firebase CLI. Here's how to install and use it:
 1. If you haven't already, [install the Firebase CLI](https://firebase.google.com/docs/cli#setup_update_cli).
+2. Log into Firebase using your Google account by running the following command:
+   
 
 ### Step 1: Create a Firebase Project
 

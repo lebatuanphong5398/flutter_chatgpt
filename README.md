@@ -1,7 +1,5 @@
 # GPT-3.5 Powered Chatbox with Flutter
 
-![Chatbox GPT-3.5](screenshot.png)
-
 Welcome to the GPT-3.5 Powered Chatbox project! This Flutter application leverages the power of OpenAI's GPT-3 API to create a chatbot that engages in natural language conversations. Users can also create images, generate summaries, view conversation history, and enjoy real-time interactions.
 
 ## Features
@@ -52,49 +50,27 @@ This chatbox project integrates with Firebase for real-time chat history and sum
 
 After downloading this repository, you need to configure Firebase to save your data. Follow these steps:
 
-
-### Configuring Firebase
+### Step 1: Configuring Firebase
 
 To set up Firebase for your project, you'll need the Firebase CLI. Here's how to install and use it:
 1. If you haven't already, [install the Firebase CLI](https://firebase.google.com/docs/cli#setup_update_cli).
 2. Log into Firebase using your Google account by running the following command:
    `firebase login`
 3. Install the FlutterFire CLI by running the following command from any directory:
-   <pre>```dart pub global activate flutterfire_cli```</pre>
+   <pre>dart pub global activate flutterfire_cli</pre>
+4. Configure your apps to use Firebase:`flutterfire configure`
 
-### Step 1: Create a Firebase Project
+### Step 2: Create a Firebase Project
 
 1. Go to the [Firebase Console](https://console.firebase.google.com/).
 2. Click on the "Add project" button.
 3. Follow the prompts to set up your project, giving it a name and selecting your preferred analytics settings.
-4. 
 
-### Step 2: Add Your App to Firebase
+### Step 3: Adjust the rules and update the link
 
-1. After creating the project, click on the "Add app" button (the Android or iOS icon).
-2. Follow the instructions to add your Flutter app to the project:
-   - For Android:
-     - Provide the package name (usually something like `com.example.gpt3_flutter_chatbox`).
-     - Download the `google-services.json` configuration file.
-     - Place the `google-services.json` file in the `android/app` directory of your project.
-   - For iOS:
-     - Provide the bundle ID.
-     - Download the `GoogleService-Info.plist` configuration file.
-     - Add the downloaded file to the `ios/Runner` directory of your project.
+Navigate to the Realtime Database, Firestore Database, and Storage, then modify the rules from 'false' to 'true'. Particularly in the Realtime Database section, you need to copy the Realtime Database link and paste it into the 'constants' file in my code.
 
-### Step 3: Enable Firebase Services
 
-1. In the Firebase Console, navigate to the "Develop" section.
-2. Enable the services you need for your project. For this project, you'll need:
-   - **Authentication:** Set up authentication methods for user login and registration.
-   - **Firestore:** This will be used to store chat histories and summaries.
-
-### Step 4: Initialize Firebase in Your App
-
-1. In your Flutter project, open the `pubspec.yaml` file.
-2. Add the `firebase_core` and `cloud_firestore` packages to your dependencies.
-3. Run `flutter pub get` to install the packages.
-4. Import the Firebase packages in your Dart code and initialize Firebase in your `main.dart`:
 
 
 

@@ -60,7 +60,7 @@ To set up Firebase for your project, you'll need the Firebase CLI. Here's how to
 2. Log into Firebase using your Google account by running the following command:
    `firebase login`
 3. Install the FlutterFire CLI by running the following command from any directory:
-   ```dart pub global activate flutterfire_cli```
+   <pre>```dart pub global activate flutterfire_cli```</pre>
 
 ### Step 1: Create a Firebase Project
 

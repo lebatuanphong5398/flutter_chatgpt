@@ -1,6 +1,6 @@
 # GPT-3.5 Powered Chatbox with Flutter
 
-Welcome to the GPT-3.5 Powered Chatbox project! This Flutter application leverages the power of OpenAI's GPT-3 API to create a chatbot that engages in natural language conversations. Users can also create images, generate summaries, view conversation history, and enjoy real-time interactions.
+Welcome to the GPT-3.5 Powered Chatbox project! This Flutter application leverages the power of OpenAI's GPT-3.5 API to create a chatbot that engages in natural language conversations. Users can also create images, generate summaries, view conversation history, and enjoy real-time interactions.
 
 ## Features
 

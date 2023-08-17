@@ -58,13 +58,14 @@ After downloading this repository, you need to configure Firebase to save your d
 To set up Firebase for your project, you'll need the Firebase CLI. Here's how to install and use it:
 1. If you haven't already, [install the Firebase CLI](https://firebase.google.com/docs/cli#setup_update_cli).
 2. Log into Firebase using your Google account by running the following command:
-   
+   `firebase login`
 
 ### Step 1: Create a Firebase Project
 
 1. Go to the [Firebase Console](https://console.firebase.google.com/).
 2. Click on the "Add project" button.
 3. Follow the prompts to set up your project, giving it a name and selecting your preferred analytics settings.
+4. 
 
 ### Step 2: Add Your App to Firebase
 

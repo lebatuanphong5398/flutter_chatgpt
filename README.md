@@ -17,7 +17,7 @@ Welcome to the GPT-3.5 Powered Chatbox project! This Flutter application leverag
 
 To experience the power of the GPT-3.5 Chatbox on your local machine, follow these steps:
 
-1. Clone this repository: `[git clone https://github.com/your-username/gpt3_flutter_chatbox.git](https://github.com/lebatuanphong5398/flutter_chatgpt.git)`
+1. Clone this repository: `https://github.com/lebatuanphong5398/flutter_chatgpt.git`
 2. Navigate to the project directory: `cd flutter_chatgpt`
 3. Install dependencies: `flutter pub get`
 4. Set up Firebase:

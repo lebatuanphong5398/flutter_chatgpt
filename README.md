@@ -66,9 +66,4 @@ Navigate to the Realtime Database, Firestore Database, and Storage, then modify 
 
 Contributions are welcome! Feel free to submit issues and pull requests to help improve the project.
 
-## License
-
-This project is licensed under the [MIT License](LICENSE).
-
-
 Experience the future of chatbots with GPT-3.5 and Flutter!

@@ -59,6 +59,7 @@ class ImageNotifier extends StateNotifier<List<ChatModel>> {
     final imageUrl2 = await storageRef.getDownloadURL();
     print(imageUrl2);
     chat.msg = imageUrl2;
+    imageFile.deleteSync();
     state = [...state, chat];
     List<String> listchat = state.map((e) => e.msg).toList();
     FirebaseFirestore.instance.collection('images').doc(chatid).set({

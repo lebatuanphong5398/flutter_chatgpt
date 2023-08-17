@@ -1,11 +1,7 @@
-import 'dart:io';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dart_openai/dart_openai.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:first_app/providers/api_key.dart';
 import 'package:first_app/providers/image_provider.dart';
 import 'package:first_app/screens/chat_screen.dart';
-import 'package:first_app/widgets/chat_widget.dart';
 import 'package:first_app/widgets/image_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -91,7 +87,9 @@ class _ImageScreenState extends ConsumerState<ImageScreen> {
                     Expanded(
                         child: TextField(
                       focusNode: focusNode,
-                      style: Theme.of(context).textTheme.bodyLarge,
+                      style: Theme.of(context).textTheme.bodyLarge!.copyWith(
+                            color: Theme.of(context).colorScheme.background,
+                          ),
                       controller: textEditingController,
                       onSubmitted: (value) async {
                         await sendMessageFCT();

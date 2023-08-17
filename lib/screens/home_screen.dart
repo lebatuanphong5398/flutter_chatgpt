@@ -10,7 +10,8 @@ import 'package:http/http.dart' as http;
 import 'package:first_app/screens/chat_screen.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
-  const HomeScreen({super.key});
+  const HomeScreen({super.key, required this.changetheme});
+  final void Function() changetheme;
   @override
   ConsumerState<HomeScreen> createState() {
     return _HomeScreenState();
@@ -237,10 +238,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                     );
                     Timer(
                         const Duration(seconds: 3),
-                        () => Navigator.of(context).pushReplacement(
-                            MaterialPageRoute(
-                                builder: (BuildContext context) =>
-                                    const ChatScreen())));
+                        () => Navigator.of(context)
+                            .pushReplacement(MaterialPageRoute(
+                                builder: (BuildContext context) => ChatScreen(
+                                      changetheme: widget.changetheme,
+                                    ))));
                   } else {
                     ScaffoldMessenger.of(context).clearSnackBars();
                     ScaffoldMessenger.of(context).showSnackBar(

@@ -2,8 +2,7 @@ import 'package:dart_openai/dart_openai.dart';
 import 'package:first_app/providers/api_key.dart';
 import 'package:first_app/providers/chat_provider.dart';
 import 'package:first_app/providers/image_provider.dart';
-import 'package:first_app/providers/list_chat.dart';
-import 'package:first_app/screens/home_screen.dart';
+import 'package:first_app/providers/summary_provider.dart';
 import 'package:first_app/screens/image_screen.dart';
 import 'package:first_app/screens/summary_screen.dart';
 import 'package:first_app/widgets/chat_widget.dart';
@@ -12,13 +11,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:uuid/uuid.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 
 const uuid = Uuid();
 
 class ChatScreen extends ConsumerStatefulWidget {
-  const ChatScreen({super.key});
-
+  const ChatScreen({super.key, required this.changetheme});
+  final void Function() changetheme;
   @override
   ConsumerState<ChatScreen> createState() => _ChatScreenState();
 }
@@ -79,7 +77,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
             _selectedPageIndex == 0
                 ? const Text("ChatGPT")
                 : _selectedPageIndex == 1
-                    ? const Text("Q&A documents")
+                    ? const Flexible(child: Text("Q&A documents"))
                     : const Text("Images with AI"),
             const SizedBox(
               width: 50,
@@ -94,8 +92,13 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
             onPressed: () {
               setState(() {
                 chatid = uuid.v4();
-                ref.watch(chatProvider.notifier).refreshChat();
-                ref.watch(imageProvider.notifier).refreshChat();
+                if (_selectedPageIndex == 0) {
+                  ref.watch(chatProvider.notifier).refreshChat();
+                } else if (_selectedPageIndex == 1) {
+                  ref.watch(sMRProvider.notifier).refreshChat();
+                } else {
+                  ref.watch(imageProvider.notifier).refreshChat();
+                }
               });
             },
             icon: Icon(
@@ -105,7 +108,10 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
           ),
         ],
       ),
-      drawer: NavigationDrawerNew(selectPage: _selectPage),
+      drawer: NavigationDrawerNew(
+        selectPage: _selectPage,
+        changetheme: widget.changetheme,
+      ),
       body: _selectedPageIndex == 0
           ? SafeArea(
               child: Padding(
@@ -130,7 +136,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                     ),
                     if (isTyping) ...[
                       const SpinKitThreeBounce(
-                        color: Color.fromARGB(255, 247, 242, 242),
+                        color: Color.fromARGB(255, 111, 104, 104),
                         size: 18,
                       ),
                     ],
@@ -154,7 +160,14 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                               Expanded(
                                   child: TextField(
                                 focusNode: focusNode,
-                                style: Theme.of(context).textTheme.bodyLarge,
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .bodyLarge!
+                                    .copyWith(
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .background,
+                                    ),
                                 controller: textEditingController,
                                 onSubmitted: (value) async {
                                   await sendMessageFCT();

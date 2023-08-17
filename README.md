@@ -35,22 +35,15 @@ To experience the power of the GPT-3.5 Chatbox on your local machine, follow the
 - Firebase: Providing backend services including authentication and Firestore database.
 - Provider: A recommended state management solution for Flutter apps.
 
-## Contributing
-
-Contributions are welcome! Feel free to submit issues and pull requests to help improve the project.
-
-## License
-
-This project is licensed under the [MIT License](LICENSE).
 
 
-## Setting up Firebase
+### Setting up Firebase
 
 This chatbox project integrates with Firebase for real-time chat history and summaries. Here's how to set up Firebase for your project:
 
 After downloading this repository, you need to configure Firebase to save your data. Follow these steps:
 
-### Step 1: Configuring Firebase
+#### Step 1: Configuring Firebase
 
 To set up Firebase for your project, you'll need the Firebase CLI. Here's how to install and use it:
 1. If you haven't already, [install the Firebase CLI](https://firebase.google.com/docs/cli#setup_update_cli).
@@ -60,18 +53,24 @@ To set up Firebase for your project, you'll need the Firebase CLI. Here's how to
    <pre>dart pub global activate flutterfire_cli</pre>
 4. Configure your apps to use Firebase:`flutterfire configure`
 
-### Step 2: Create a Firebase Project
+#### Step 2: Create a Firebase Project
 
 1. Go to the [Firebase Console](https://console.firebase.google.com/).
 2. Click on the "Add project" button.
 3. Follow the prompts to set up your project, giving it a name and selecting your preferred analytics settings.
 
-### Step 3: Adjust the rules and update the link
+#### Step 3: Adjust the rules and update the link
 
 Navigate to the Realtime Database, Firestore Database, and Storage, then modify the rules from 'false' to 'true'. Particularly in the Realtime Database section, you need to copy the Realtime Database link and paste it into the 'constants' file in my code.
 
 
+## Contributing
 
+Contributions are welcome! Feel free to submit issues and pull requests to help improve the project.
+
+## License
+
+This project is licensed under the [MIT License](LICENSE).
 
 
 Experience the future of chatbots with GPT-3.5 and Flutter!

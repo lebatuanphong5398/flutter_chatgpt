@@ -45,7 +45,7 @@ Contributions are welcome! Feel free to submit issues and pull requests to help 
 
 This project is licensed under the [MIT License](LICENSE).
 
----
+
 ## Setting up Firebase
 
 This chatbox project integrates with Firebase for real-time chat history and summaries. Here's how to set up Firebase for your project:

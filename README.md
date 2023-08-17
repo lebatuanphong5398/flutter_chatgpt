@@ -22,22 +22,7 @@ To experience the power of the GPT-3.5 Chatbox on your local machine, follow the
    - I have dedicated a separate section below for detailed instructions.
 5. Run the app: `flutter run`
 
-## Screenshots
-
-![Chat Screen](screenshots/chat_screen.png)
-![Image Generation](screenshots/image_generation.png)
-![Chat History](screenshots/chat_history.png)
-
-## Technologies Used
-
-- Flutter: A versatile UI toolkit for crafting natively compiled applications.
-- OpenAI GPT-3.5 API: Powering the natural language interactions within the chatbox.
-- Firebase: Providing backend services including authentication and Firestore database.
-- Provider: A recommended state management solution for Flutter apps.
-
-
-
-### Setting up Firebase
+   ### Setting up Firebase
 
 This chatbox project integrates with Firebase for real-time chat history and summaries. Here's how to set up Firebase for your project:
 
@@ -62,6 +47,19 @@ To set up Firebase for your project, you'll need the Firebase CLI. Here's how to
 #### Step 3: Adjust the rules and update the link
 
 Navigate to the Realtime Database, Firestore Database, and Storage, then modify the rules from 'false' to 'true'. Particularly in the Realtime Database section, you need to copy the Realtime Database link and paste it into the 'constants' file in my code.
+
+## Screenshots
+
+![Chat Screen](screenshots/chat_screen.png)
+![Image Generation](screenshots/image_generation.png)
+![Chat History](screenshots/chat_history.png)
+
+## Technologies Used
+
+- Flutter: A versatile UI toolkit for crafting natively compiled applications.
+- OpenAI GPT-3.5 API: Powering the natural language interactions within the chatbox.
+- Firebase: Providing backend services including authentication and Firestore database.
+- Provider: A recommended state management solution for Flutter apps.
 
 
 ## Contributing

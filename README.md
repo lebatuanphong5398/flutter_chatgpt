@@ -50,9 +50,10 @@ Navigate to the Realtime Database, Firestore Database, and Storage, then modify 
 
 ## Screenshots
 
-![Chat Screen](screenshots/chat_screen.png)
-![Image Generation](screenshots/image_generation.png)
-![Chat History](screenshots/chat_history.png)
+![Home Screen](assets/screen/home_screen.jpg)
+![Chat Screen](assets/screen/chatscreen.jpg)
+![Image Screen](assets/screen/image.jpg)
+![Chat History](assets/screen/chat_history.jpg)
 
 ## Technologies Used
 

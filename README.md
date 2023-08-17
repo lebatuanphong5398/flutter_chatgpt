@@ -50,10 +50,15 @@ Navigate to the Realtime Database, Firestore Database, and Storage, then modify 
 
 ## Screenshots
 
-![Chat Screen](assets/screen/chat_history.jpg)
-![Image Generation](screenshots/image_generation.png)
-![Chat History](screenshots/chat_history.png)
-
+![Home Screen](assets/screen/home_screen.jpg)
+![Chat Screen](assets/screen/chatscreen.jpg)
+![Image Screen](assets/screen/image.jpg)
+![Chat History](assets/screen/chat_history.jpg)
+<div style="display: flex;">
+  <img src="assets/screen/home_screen.jpg" alt="Phone 1" width="30%">
+  <img src="assets/screen/chatscreen.jpg" alt="Phone 2" width="30%">
+  <img src="assets/screen/image.jpg" alt="Phone 3" width="30%">
+</div>
 ## Technologies Used
 
 - Flutter: A versatile UI toolkit for crafting natively compiled applications.

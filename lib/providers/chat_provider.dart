@@ -1,11 +1,14 @@
 import 'package:first_app/models/chat_models.dart';
-import 'package:first_app/services/api_services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:langchain/langchain.dart';
 
 class ChatNotifier extends StateNotifier<List<ChatModel>> {
   ChatNotifier() : super([]);
-  void addUserMessage({required String msg, required String chatid}) {
+  void addUserMessage({
+    required String msg,
+    required String chatid,
+  }) {
     state = [...state, ChatModel(msg: msg, chatIndex: 0)];
     List<String> listchat = state.map((e) => e.msg).toList();
     FirebaseFirestore.instance.collection('conversations').doc(chatid).set({
@@ -32,29 +35,16 @@ class ChatNotifier extends StateNotifier<List<ChatModel>> {
     return listchat;
   }
 
-  Future<void> sendMessageAndGetAnswers(
-      {required String msg,
-      required String chosenModelId,
-      required String chatid}) async {
-    ChatModel chat = await ApiService.sendMessageGPT(
-      message: msg,
-      modelId: chosenModelId,
-    );
-    state = [...state, chat];
-    List<String> listchat = state.map((e) => e.msg).toList();
-    FirebaseFirestore.instance.collection('conversations').doc(chatid).set({
-      'message': listchat,
-      'createdAt': Timestamp.now(),
-    });
-  }
+  Future<void> sendMessageAndGetAnswers({
+    required String msg,
+    required String chosenModelId,
+    required String chatid,
+    required ConversationChain conversation,
+  }) async {
+    final output = await conversation.run(msg);
+    ChatModel chat = ChatModel(msg: output, chatIndex: 1);
+    //memory.chatHistory.addAIChatMessage(chat.msg);
 
-  Future<void> sendMessageAndGetImage(
-      {required String msg,
-      required String chosenModelId,
-      required String chatid}) async {
-    ChatModel chat = await ApiService.generationsimages(
-      message: msg,
-    );
     state = [...state, chat];
     List<String> listchat = state.map((e) => e.msg).toList();
     FirebaseFirestore.instance.collection('conversations').doc(chatid).set({

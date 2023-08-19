@@ -1,20 +1,18 @@
 import 'dart:convert';
 import 'dart:io';
-import 'dart:math';
 import 'package:dart_openai/dart_openai.dart';
 import 'package:first_app/constants/api_consts.dart';
-import 'package:first_app/models/models.dart';
 import 'package:first_app/models/srm_model.dart';
-import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:first_app/services/api_services.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:langchain/langchain.dart';
 import '../models/chat_models.dart';
 
 class ApiService {
-  // Send Message using ChatGPT API
-  static Future<ChatModel> sendMessageGPT(
-      {required String message, required String modelId}) async {
+  //Send Message using ChatGPT API
+  static Future<String> sendMessageGPT({
+    required String message,
+    required String modelId,
+  }) async {
     try {
       OpenAIChatCompletionModel chatgpt = await OpenAI.instance.chat.create(
         model: modelId,
@@ -26,10 +24,7 @@ class ApiService {
         ],
       );
       print(chatgpt.choices[0].message.content);
-      return ChatModel(
-        msg: chatgpt.choices[0].message.content,
-        chatIndex: 1,
-      );
+      return chatgpt.choices[0].message.content;
     } catch (error) {
       rethrow;
     }
@@ -53,20 +48,16 @@ class ApiService {
   }
 
   static Future<SmrModel> sendMessageSMR(
-      {required String message, required File file}) async {
+      {required String message,
+      required File file,
+      required RetrievalQAChain retrievalQA}) async {
     try {
-      OpenAIChatCompletionModel chatgpt = await OpenAI.instance.chat.create(
-        model: "gpt-3.5-turbo",
-        messages: [
-          OpenAIChatCompletionChoiceMessageModel(
-            role: OpenAIChatMessageRole.user,
-            content: message,
-          )
-        ],
-      );
-      print(chatgpt.choices[0].message.content);
-      return SmrModel(
-          msg: chatgpt.choices[0].message.content, chatIndex: 1, file: file);
+      final res = await retrievalQA(message);
+      print("______________________$res");
+      print("---------------${res['statusCode']}");
+      print(res["result"].toString());
+
+      return SmrModel(msg: res["result"].toString(), chatIndex: 1, file: file);
     } catch (error) {
       rethrow;
     }

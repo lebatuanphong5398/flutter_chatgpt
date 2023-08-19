@@ -1,5 +1,4 @@
-import 'package:dart_openai/dart_openai.dart';
-import 'package:first_app/providers/api_key.dart';
+import 'package:first_app/constants/api_consts.dart';
 import 'package:first_app/providers/chat_provider.dart';
 import 'package:first_app/providers/image_provider.dart';
 import 'package:first_app/providers/summary_provider.dart';
@@ -10,6 +9,8 @@ import 'package:first_app/widgets/navigationDrawerNew.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:langchain/langchain.dart';
+import 'package:langchain_openai/langchain_openai.dart';
 import 'package:uuid/uuid.dart';
 
 const uuid = Uuid();
@@ -23,10 +24,15 @@ class ChatScreen extends ConsumerStatefulWidget {
 
 class _ChatScreenState extends ConsumerState<ChatScreen> {
   bool isTyping = false;
+
   late TextEditingController textEditingController;
   late ScrollController _listScrollController;
   late FocusNode focusNode;
   String chatid = uuid.v4();
+  var conversation = ConversationChain(
+    llm: OpenAI(apiKey: apiKey, temperature: 0.5),
+    memory: ConversationBufferMemory(),
+  );
 
   @override
   void initState() {
@@ -93,6 +99,10 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
               setState(() {
                 chatid = uuid.v4();
                 if (_selectedPageIndex == 0) {
+                  conversation = ConversationChain(
+                    llm: OpenAI(apiKey: apiKey, temperature: 0.5),
+                    memory: ConversationBufferMemory(),
+                  );
                   ref.watch(chatProvider.notifier).refreshChat();
                 } else if (_selectedPageIndex == 1) {
                   ref.watch(sMRProvider.notifier).refreshChat();
@@ -284,16 +294,20 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
       String msg = textEditingController.text;
       setState(() {
         isTyping = true;
-        ref
-            .watch(chatProvider.notifier)
-            .addUserMessage(msg: msg, chatid: chatid);
+        //memory.chatHistory.addHumanChatMessage('hi!');
+        ref.watch(chatProvider.notifier).addUserMessage(
+              msg: msg,
+              chatid: chatid,
+            );
         textEditingController.clear();
         focusNode.unfocus();
       });
 
-      OpenAI.apiKey = ref.watch(apiKeyProvider);
       await ref.watch(chatProvider.notifier).sendMessageAndGetAnswers(
-          msg: msg, chosenModelId: "gpt-3.5-turbo", chatid: chatid);
+          msg: msg,
+          chosenModelId: "gpt-3.5-turbo",
+          chatid: chatid,
+          conversation: conversation);
       setState(() {});
     } catch (error) {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(

@@ -1,5 +1,6 @@
 import 'dart:io';
-import 'package:dart_openai/dart_openai.dart';
+
+import 'package:collection/collection.dart';
 import 'package:first_app/constants/api_consts.dart';
 import 'package:first_app/providers/summary_provider.dart';
 import 'package:first_app/screens/chat_screen.dart';
@@ -20,86 +21,56 @@ class SummaryScreen extends ConsumerStatefulWidget {
 
 class _SummaryScreenState extends ConsumerState<SummaryScreen> {
   PlatformFile? file;
-  late RetrievalQAChain retrievalQA;
-  dynamic embeddings;
-  dynamic textsWithSources;
-  dynamic docSearch;
-  var _responsedAnswer = '';
-  var _enteredQuestion = '';
-  void _filePicker() async {
+  RetrievalQAChain? retrievalQA;
+  Future filePicker() async {
     FilePickerResult? result = await FilePicker.platform.pickFiles();
 
     if (result != null) {
-      setState(() {
-        file = result.files.first;
-        ref.watch(sMRProvider.notifier).addfile(file: File(file!.path!));
-      });
-    } else {
-      // User canceled the picker
+      file = result.files.first;
+      ref.watch(sMRProvider.notifier).addfile(file: File(file!.path!));
     }
   }
 
-  Future<RetrievalQAChain> loadFile() async {
-    try {
-      var loader = TextLoader(file!.path!);
-      loader.load().then((value) {
-        const textSplitter = RecursiveCharacterTextSplitter(
-          chunkSize: 500,
-          chunkOverlap: 0,
-        );
-        final docChunks = textSplitter.splitDocuments(value);
-        textsWithSources = docChunks.map(
-          (e) {
-            return e.copyWith(
-              metadata: {...e.metadata, 'source': '${docChunks.indexOf(e)}-pl'},
-            );
-          },
-        ).toList();
-      });
-    } catch (e) {
-      print(e.toString());
-    }
-
-    embeddings = OpenAIEmbeddings(apiKey: apiKey);
-    print(textsWithSources);
-    var docSearch = await MemoryVectorStore.fromDocuments(
-            documents: textsWithSources, embeddings: embeddings)
-        .then((value) {
-      print('docSearch:_________________ ${value.memoryVectors.first}');
-      return value;
-    }).catchError((err) {
-      setState(() {
-        _responsedAnswer = err.toString();
-      });
-      return MemoryVectorStore(embeddings: embeddings);
-    });
-
-    final llm =
-        ChatOpenAI(apiKey: apiKey, model: 'gpt-3.5-turbo', temperature: 0.5);
+  Future<void> loadFile() async {
+    var loader = TextLoader(file!.path!);
+    final documents = await loader.load();
+    const textSplitter = RecursiveCharacterTextSplitter(
+      chunkSize: 500,
+      chunkOverlap: 0,
+    );
+    final texts = textSplitter.splitDocuments(documents);
+    final textsWithSources = texts
+        .mapIndexed(
+          (final i, final d) => d.copyWith(
+            metadata: {
+              ...d.metadata,
+              'source': '$i-pl',
+            },
+          ),
+        )
+        .toList(growable: false);
+    final embeddings = OpenAIEmbeddings(apiKey: apiKey);
+    final docSearch = await MemoryVectorStore.fromDocuments(
+      documents: textsWithSources,
+      embeddings: embeddings,
+    );
+    final llm = ChatOpenAI(
+      apiKey: apiKey,
+      model: 'gpt-3.5-turbo-0613',
+      temperature: 0,
+    );
     final qaChain = OpenAIQAWithSourcesChain(llm: llm);
     final docPrompt = PromptTemplate.fromTemplate(
-      '''You will be given a text document\n Answer based on the language of the question \n If you cannot find an answer related to the text, answer:"Không có dữ liệu về câu hỏi trong tài liệu!". '
-        .\ncontent: {page_content}\nSource: {source}
-        ''',
+      'Content: {page_content}\nSource: {source}',
     );
     final finalQAChain = StuffDocumentsChain(
       llmChain: qaChain,
       documentPrompt: docPrompt,
     );
-
-    return RetrievalQAChain(
+    retrievalQA = RetrievalQAChain(
       retriever: docSearch.asRetriever(),
       combineDocumentsChain: finalQAChain,
     );
-  }
-
-  Future getResponsive() async {
-    //print("--------${retrievalQA.memory}");
-    final res =
-        await retrievalQA("Thủ tướng Nêru ngồi cạnh Bác sung sướng nói gì:");
-    print("______________________$res");
-    print("---------------${res['statusCode']}");
-    print(res["result"]);
   }
 
   bool isTyping = false;
@@ -157,7 +128,8 @@ class _SummaryScreenState extends ConsumerState<SummaryScreen> {
                     children: [
                       ElevatedButton(
                         onPressed: () async {
-                          _filePicker();
+                          await filePicker();
+                          await loadFile();
                         },
                         child: Text(
                           'Select File',
@@ -171,44 +143,29 @@ class _SummaryScreenState extends ConsumerState<SummaryScreen> {
                         ),
                       ),
                       const SizedBox(height: 8),
-                      smrprovider.isEmpty
-                          ? Text(
-                              "Select file",
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .bodyMedium!
-                                  .copyWith(
-                                      color: Theme.of(context)
-                                          .colorScheme
-                                          .onTertiaryContainer),
-                            )
-                          : Text(
-                              "File selected:  ${smrprovider.last.file.path.split('/').last}",
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .bodyMedium!
-                                  .copyWith(
-                                      color: Theme.of(context)
-                                          .colorScheme
-                                          .onTertiaryContainer),
-                            ),
-                      ElevatedButton(
-                        onPressed: () async {
-                          retrievalQA = await loadFile();
-                          //print("___________${smrprovider.last.file}");
-                        },
-                        child: const Text(
-                          'Không cần làm gì chỉ cần nhấp vào đây',
+                      if (smrprovider.isEmpty)
+                        Text(
+                          "File selected: ",
+                          style: Theme.of(context)
+                              .textTheme
+                              .bodyMedium!
+                              .copyWith(
+                                  color: Theme.of(context)
+                                      .colorScheme
+                                      .onTertiaryContainer),
+                        )
+                      else
+                        Text(
+                          "File selected:  ${smrprovider.last.file.path.split('/').last}",
+                          style: Theme.of(context)
+                              .textTheme
+                              .bodyMedium!
+                              .copyWith(
+                                  fontWeight: FontWeight.bold,
+                                  color: Theme.of(context)
+                                      .colorScheme
+                                      .onTertiaryContainer),
                         ),
-                      ),
-                      ElevatedButton(
-                        onPressed: () {
-                          getResponsive();
-                        },
-                        child: const Text(
-                          'Không cần làm gì chỉ cần nhấp vào đây 2',
-                        ),
-                      )
                     ],
                   ),
                 ),
@@ -344,14 +301,16 @@ class _SummaryScreenState extends ConsumerState<SummaryScreen> {
         focusNode.unfocus();
       });
 
-      OpenAI.apiKey = apiKey;
       await ref.watch(sMRProvider.notifier).sendMessageSMR(
-          msg: msg,
-          chosenModelId: "gpt-3.5-turbo",
-          chatid: chatid,
-          file: File(file!.path!));
+            msg: msg,
+            chatid: chatid,
+            file: File(file!.path!),
+            retrievalQA: retrievalQA!,
+          );
+
       setState(() {});
     } catch (error) {
+      print(error);
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         content: Text(
           error.toString(),

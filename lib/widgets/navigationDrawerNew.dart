@@ -1,15 +1,12 @@
 import 'dart:io';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:first_app/providers/chat_provider.dart';
 import 'package:first_app/providers/image_provider.dart';
 import 'package:first_app/providers/summary_provider.dart';
 import 'package:first_app/screens/chat_screen.dart';
 import 'package:first_app/screens/home_screen.dart';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:get/get.dart';
 
 class NavigationDrawerNew extends ConsumerStatefulWidget {
   const NavigationDrawerNew(
@@ -314,7 +311,7 @@ class _NavigationDrawerNewState extends ConsumerState<NavigationDrawerNew> {
                             onPressed: () {
                               FirebaseFirestore.instance
                                   .collection('Summary')
-                                  .doc(loadedimages[index].id)
+                                  .doc(loadedsmr[index].id)
                                   .delete();
                             },
                           ),

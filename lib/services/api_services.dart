@@ -39,7 +39,7 @@ class ApiService {
           'Authorization': 'Bearer $apiKey',
           "Content-Type": "application/json"
         },
-        body: json.encode({"prompt": message, "n": 2, "size": "1024x1024"}));
+        body: json.encode({"prompt": message, "n": 1, "size": "1024x1024"}));
     Map jsonResponse = jsonDecode(response.body);
     print("________________${response.body}");
     return ChatModel(

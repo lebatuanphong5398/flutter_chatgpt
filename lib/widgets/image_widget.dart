@@ -23,21 +23,6 @@ class ImageWidget extends StatelessWidget {
         print('Error saving image: ${result['errorMessage']}');
       }
     }
-    //   void _addItem() async {
-    //   final newItem = await Navigator.of(context).push<GroceryItem>(
-    //     MaterialPageRoute(
-    //       builder: (ctx) => const NewItem(),
-    //     ),
-    //   );
-
-    //   if (newItem == null) {
-    //     return;
-    //   }
-
-    //   setState(() {
-    //     _groceryItems.add(newItem);
-    //   });
-    // }
 
     Widget? content;
     if (chatIndex == 0) {

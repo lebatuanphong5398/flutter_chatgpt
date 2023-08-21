@@ -4,7 +4,6 @@ import 'package:collection/collection.dart';
 import 'package:first_app/constants/api_consts.dart';
 import 'package:first_app/providers/chatid_provider.dart';
 import 'package:first_app/providers/summary_provider.dart';
-import 'package:first_app/screens/chat_screen.dart';
 import 'package:first_app/widgets/chat_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
@@ -78,6 +77,7 @@ class _SummaryScreenState extends ConsumerState<SummaryScreen> {
   late TextEditingController textEditingController;
   late ScrollController _listScrollController;
   late FocusNode focusNode;
+  bool isloadfile = false;
 
   @override
   void initState() {
@@ -130,7 +130,13 @@ class _SummaryScreenState extends ConsumerState<SummaryScreen> {
                       ElevatedButton(
                         onPressed: () async {
                           await filePicker();
+                          setState(() {
+                            isloadfile = true;
+                          });
                           await loadFile();
+                          setState(() {
+                            isloadfile = false;
+                          });
                         },
                         child: Text(
                           'Select File',
@@ -173,90 +179,108 @@ class _SummaryScreenState extends ConsumerState<SummaryScreen> {
               ],
             ),
           ),
-          Flexible(
-            child: ListView.builder(
-                controller: _listScrollController,
-                itemCount: smrprovider.length, //chatList.length,
-                itemBuilder: (context, index) {
-                  return Padding(
-                    padding: const EdgeInsets.only(top: 10.0),
-                    child: ChatWidget(
-                      msg: smrprovider[index].msg,
+          if (isloadfile)
+            const CircularProgressIndicator()
+          else
+            Expanded(
+              child: Column(
+                children: [
+                  Flexible(
+                    child: ListView.builder(
+                        controller: _listScrollController,
+                        itemCount: smrprovider.length, //chatList.length,
+                        itemBuilder: (context, index) {
+                          return Padding(
+                            padding: const EdgeInsets.only(top: 10.0),
+                            child: ChatWidget(
+                              msg: smrprovider[index].msg,
 
-                      // chatList[index].msg,
-                      chatIndex: smrprovider[index].chatIndex,
-                      //chatList[index].chatIndex,
-                    ),
-                  );
-                }),
-          ),
-          if (isTyping) ...[
-            const SpinKitThreeBounce(
-              color: Color.fromARGB(255, 247, 242, 242),
-              size: 18,
-            ),
-          ],
-          const SizedBox(
-            height: 15,
-          ),
-          Padding(
-            padding: const EdgeInsets.all(8),
-            child: Material(
-              shape: RoundedRectangleBorder(
-                side:
-                    BorderSide(color: Theme.of(context).colorScheme.onPrimary),
-                borderRadius: BorderRadius.circular(10.0),
-              ),
-              color: Theme.of(context).colorScheme.onTertiaryContainer,
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Row(
-                  children: [
-                    Expanded(
-                        child: TextField(
-                      focusNode: focusNode,
-                      style: Theme.of(context).textTheme.bodyLarge!.copyWith(
-                            color: Theme.of(context).colorScheme.background,
-                          ),
-                      controller: textEditingController,
-                      onSubmitted: (value) async {
-                        await sendMessageFCT();
-                      },
-                      decoration: InputDecoration.collapsed(
-                        hintText: "What do you want to ask?",
-                        hintStyle:
-                            Theme.of(context).textTheme.bodyLarge!.copyWith(
-                                  color: Theme.of(context)
-                                      .colorScheme
-                                      .onSecondary
-                                      .withOpacity(0.3),
-                                ),
-                      ),
-                    )),
-                    IconButton(
-                      onPressed: () async {
-                        await sendMessageFCT();
-                      },
-                      icon: Icon(
-                        Icons.send,
-                        color: Theme.of(context).colorScheme.onPrimary,
-                      ),
-                    )
-                  ],
-                ),
-              ),
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 8),
-            child: Text(
-              'Free Research Preview. Our goal is to make AI systems more natural and safe to interact with. Your feedback will help us improve.',
-              style: Theme.of(context).textTheme.labelSmall!.copyWith(
-                    color: Theme.of(context).colorScheme.onPrimaryContainer,
+                              // chatList[index].msg,
+                              chatIndex: smrprovider[index].chatIndex,
+                              //chatList[index].chatIndex,
+                            ),
+                          );
+                        }),
                   ),
-              textAlign: TextAlign.center,
+                  if (isTyping) ...[
+                    const SpinKitThreeBounce(
+                      color: Color.fromARGB(255, 247, 242, 242),
+                      size: 18,
+                    ),
+                  ],
+                  const SizedBox(
+                    height: 15,
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(8),
+                    child: Material(
+                      shape: RoundedRectangleBorder(
+                        side: BorderSide(
+                            color: Theme.of(context).colorScheme.onPrimary),
+                        borderRadius: BorderRadius.circular(10.0),
+                      ),
+                      color: Theme.of(context).colorScheme.onTertiaryContainer,
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Row(
+                          children: [
+                            Expanded(
+                                child: TextField(
+                              focusNode: focusNode,
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodyLarge!
+                                  .copyWith(
+                                    color: Theme.of(context)
+                                        .colorScheme
+                                        .background,
+                                  ),
+                              controller: textEditingController,
+                              onSubmitted: (value) async {
+                                await sendMessageFCT();
+                              },
+                              decoration: InputDecoration.collapsed(
+                                hintText: "What do you want to ask?",
+                                hintStyle: Theme.of(context)
+                                    .textTheme
+                                    .bodyLarge!
+                                    .copyWith(
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .onSecondary
+                                          .withOpacity(0.3),
+                                    ),
+                              ),
+                            )),
+                            IconButton(
+                              onPressed: () async {
+                                await sendMessageFCT();
+                              },
+                              icon: Icon(
+                                Icons.send,
+                                color: Theme.of(context).colorScheme.onPrimary,
+                              ),
+                            )
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 8),
+                    child: Text(
+                      'Free Research Preview. Our goal is to make AI systems more natural and safe to interact with. Your feedback will help us improve.',
+                      style: Theme.of(context).textTheme.labelSmall!.copyWith(
+                            color: Theme.of(context)
+                                .colorScheme
+                                .onPrimaryContainer,
+                          ),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                ],
+              ),
             ),
-          ),
         ],
       ),
     );

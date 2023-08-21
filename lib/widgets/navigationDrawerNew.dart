@@ -7,6 +7,9 @@ import 'package:first_app/screens/chat_screen.dart';
 import 'package:first_app/screens/home_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:firebase_storage/firebase_storage.dart';
+
+final storageRef = FirebaseStorage.instance.ref().child('user_images');
 
 class NavigationDrawerNew extends ConsumerStatefulWidget {
   const NavigationDrawerNew(
@@ -20,6 +23,8 @@ class NavigationDrawerNew extends ConsumerStatefulWidget {
 }
 
 class _NavigationDrawerNewState extends ConsumerState<NavigationDrawerNew> {
+  DocumentSnapshot<Map<String, dynamic>>? data;
+  Reference? desertRef;
   @override
   Widget build(BuildContext context) {
     dynamic loadedMessages;
@@ -217,12 +222,30 @@ class _NavigationDrawerNewState extends ConsumerState<NavigationDrawerNew> {
                             await ref
                                 .watch(imageProvider.notifier)
                                 .getchatlist(loadedimages[index].id);
+
                             widget.selectPage(2);
                             Navigator.of(context).pop();
                           },
                           trailing: IconButton(
                             icon: const Icon(Icons.delete),
-                            onPressed: () {
+                            onPressed: () async {
+                              data = await FirebaseFirestore.instance
+                                  .collection('images')
+                                  .doc(loadedimages[index].id)
+                                  .get();
+                              for (int i = 1;
+                                  i < data!["message"].length;
+                                  i += 2) {
+                                String fileName = data!["message"][i].substring(
+                                    data!["message"][i].lastIndexOf('/') + 1);
+                                print(
+                                    "___________________________----$fileName");
+
+                                desertRef = storageRef.child('$fileName.jpg');
+
+                                await desertRef!.delete();
+                              }
+
                               FirebaseFirestore.instance
                                   .collection('images')
                                   .doc(loadedimages[index].id)
@@ -361,7 +384,7 @@ class _NavigationDrawerNewState extends ConsumerState<NavigationDrawerNew> {
                       fontSize: 20,
                     ),
               ),
-              onTap: () {
+              onTap: () async {
                 if (loadedMessages != null) {
                   for (var element in loadedMessages) {
                     FirebaseFirestore.instance
@@ -369,6 +392,7 @@ class _NavigationDrawerNewState extends ConsumerState<NavigationDrawerNew> {
                         .doc(element.id)
                         .delete();
                   }
+                  ref.watch(chatProvider.notifier).refreshChat();
                 }
 
                 if (loadedsmr != null) {
@@ -378,14 +402,29 @@ class _NavigationDrawerNewState extends ConsumerState<NavigationDrawerNew> {
                         .doc(element.id)
                         .delete();
                   }
+                  ref.watch(sMRProvider.notifier).refreshChat();
                 }
                 if (loadedimages != null) {
                   for (var element in loadedimages) {
+                    data = await FirebaseFirestore.instance
+                        .collection('images')
+                        .doc(element.id)
+                        .get();
                     FirebaseFirestore.instance
                         .collection('images')
                         .doc(element.id)
                         .delete();
+                    for (int i = 1; i < data!["message"].length; i += 2) {
+                      String fileName = data!["message"][i]
+                          .substring(data!["message"][i].lastIndexOf('/') + 1);
+                      print("___________________________----$fileName");
+
+                      desertRef = storageRef.child('$fileName.jpg');
+
+                      await desertRef!.delete();
+                    }
                   }
+                  ref.watch(imageProvider.notifier).refreshChat();
                 }
                 setState(() {});
               },

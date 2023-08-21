@@ -23,6 +23,14 @@ class ImageNotifier extends StateNotifier<List<ChatModel>> {
     state = [];
   }
 
+  void deleteimage({required String imageName}) {
+    final storageRef = FirebaseStorage.instance
+        .ref()
+        .child('user_images')
+        .child('$imageName.jpg');
+    storageRef.delete();
+  }
+
   Future<List<ChatModel>> getchatlist(String chatid) async {
     final data =
         await FirebaseFirestore.instance.collection('images').doc(chatid).get();
@@ -57,14 +65,15 @@ class ImageNotifier extends StateNotifier<List<ChatModel>> {
         FirebaseStorage.instance.ref().child('user_images').child('$time.jpg');
     await storageRef.putFile(imageFile);
     final imageUrl2 = await storageRef.getDownloadURL();
-    print(imageUrl2);
-    chat.msg = imageUrl2;
+    //print(imageUrl2);
+    chat.msg = '$imageUrl2/${time.toString()}';
+
     imageFile.deleteSync();
     state = [...state, chat];
     List<String> listchat = state.map((e) => e.msg).toList();
     FirebaseFirestore.instance.collection('images').doc(chatid).set({
       'message': listchat,
-      'createdAt': Timestamp.now(),
+      'createdAt': time,
     });
   }
 }

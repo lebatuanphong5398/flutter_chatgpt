@@ -1,5 +1,6 @@
 import 'package:first_app/constants/api_consts.dart';
 import 'package:first_app/providers/chat_provider.dart';
+import 'package:first_app/providers/chatid_provider.dart';
 import 'package:first_app/providers/image_provider.dart';
 import 'package:first_app/providers/summary_provider.dart';
 import 'package:first_app/screens/image_screen.dart';
@@ -24,11 +25,11 @@ class ChatScreen extends ConsumerStatefulWidget {
 
 class _ChatScreenState extends ConsumerState<ChatScreen> {
   bool isTyping = false;
-
+  String chatid = "";
   late TextEditingController textEditingController;
   late ScrollController _listScrollController;
   late FocusNode focusNode;
-  String chatid = uuid.v4();
+
   var conversation = ConversationChain(
     llm: OpenAI(apiKey: apiKey, temperature: 0.5),
     memory: ConversationBufferMemory(),
@@ -60,12 +61,8 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // Widget activePage = ChatScreen();
-    // if (_selectedPageIndex == 1) {
-    //   activePage = SummaryScreen();
-    // }
+    //ref.watch(chatidProvider.notifier).changeChatid();
 
-    //final modelsProvider = Provider.of<ModelsProvider>(context);
     var chatprovider = ref.watch(chatProvider);
     return Scaffold(
       appBar: AppBar(
@@ -96,20 +93,26 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
         actions: [
           IconButton(
             onPressed: () {
-              setState(() {
-                chatid = uuid.v4();
-                if (_selectedPageIndex == 0) {
+              if (_selectedPageIndex == 0) {
+                setState(() {
+                  ref.watch(chatidProvider.notifier).changeChatid();
                   conversation = ConversationChain(
-                    llm: OpenAI(apiKey: apiKey, temperature: 0.5),
+                    llm: OpenAI(apiKey: apiKey, temperature: 0.7),
                     memory: ConversationBufferMemory(),
                   );
                   ref.watch(chatProvider.notifier).refreshChat();
-                } else if (_selectedPageIndex == 1) {
+                });
+              } else if (_selectedPageIndex == 1) {
+                setState(() {
+                  ref.watch(chatidProvider.notifier).changeChatid();
                   ref.watch(sMRProvider.notifier).refreshChat();
-                } else {
+                });
+              } else {
+                setState(() {
+                  ref.watch(chatidProvider.notifier).changeChatid();
                   ref.watch(imageProvider.notifier).refreshChat();
-                }
-              });
+                });
+              }
             },
             icon: Icon(
               Icons.add,
@@ -297,7 +300,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
         //memory.chatHistory.addHumanChatMessage('hi!');
         ref.watch(chatProvider.notifier).addUserMessage(
               msg: msg,
-              chatid: chatid,
+              chatid: ref.watch(chatidProvider),
             );
         textEditingController.clear();
         focusNode.unfocus();
@@ -306,7 +309,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
       await ref.watch(chatProvider.notifier).sendMessageAndGetAnswers(
           msg: msg,
           chosenModelId: "gpt-3.5-turbo",
-          chatid: chatid,
+          chatid: ref.watch(chatidProvider),
           conversation: conversation);
       setState(() {});
     } catch (error) {

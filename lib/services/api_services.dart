@@ -41,6 +41,7 @@ class ApiService {
         },
         body: json.encode({"prompt": message, "n": 2, "size": "1024x1024"}));
     Map jsonResponse = jsonDecode(response.body);
+    print("________________${response.body}");
     return ChatModel(
       msg: jsonResponse["data"][0]["url"],
       chatIndex: 1,

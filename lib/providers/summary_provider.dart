@@ -40,7 +40,8 @@ class SMRNotifier extends StateNotifier<List<SmrModel>> {
         .get();
     List<SmrModel> listchat = [];
     for (var i = 0; i < data["message"].length; i++) {
-      var number = i % 2; // 0 or 1
+      var number = (i + 1) % 2; // 0 or 1
+      //print(data["message"][i]);
       listchat.add(
           SmrModel(msg: data["message"][i], chatIndex: number, file: file));
     }
@@ -55,7 +56,6 @@ class SMRNotifier extends StateNotifier<List<SmrModel>> {
       required RetrievalQAChain retrievalQA}) async {
     SmrModel chat = await ApiService.sendMessageSMR(
         message: msg, file: file, retrievalQA: retrievalQA);
-    print("_______${chat.msg}");
     state = [...state, chat];
     List<String> listchat = state.map((e) => e.msg).toList();
     FirebaseFirestore.instance.collection('Summary').doc(chatid).set({

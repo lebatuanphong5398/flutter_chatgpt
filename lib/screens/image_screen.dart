@@ -1,5 +1,6 @@
 import 'package:dart_openai/dart_openai.dart';
 import 'package:first_app/providers/api_key.dart';
+import 'package:first_app/providers/chatid_provider.dart';
 import 'package:first_app/providers/image_provider.dart';
 import 'package:first_app/screens/chat_screen.dart';
 import 'package:first_app/widgets/image_widget.dart';
@@ -21,7 +22,6 @@ class _ImageScreenState extends ConsumerState<ImageScreen> {
   late TextEditingController textEditingController;
   late ScrollController _listScrollController;
   late FocusNode focusNode;
-  String chatid = uuid.v4();
 
   @override
   void initState() {
@@ -170,14 +170,15 @@ class _ImageScreenState extends ConsumerState<ImageScreen> {
         isTyping = true;
         ref
             .watch(imageProvider.notifier)
-            .addUserMessage(msg: msg, chatid: chatid);
+            .addUserMessage(msg: msg, chatid: ref.watch(chatidProvider));
         textEditingController.clear();
         focusNode.unfocus();
       });
-
       OpenAI.apiKey = ref.watch(apiKeyProvider);
       await ref.watch(imageProvider.notifier).sendMessageAndGetImage(
-          msg: msg, chosenModelId: "gpt-3.5-turbo", chatid: chatid);
+          msg: msg,
+          chosenModelId: "gpt-3.5-turbo",
+          chatid: ref.watch(chatidProvider));
       setState(() {});
     } catch (error) {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(

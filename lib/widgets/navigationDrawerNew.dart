@@ -300,6 +300,7 @@ class _NavigationDrawerNewState extends ConsumerState<NavigationDrawerNew> {
                                 .get();
                             File file = File(data["filepath"]);
                             //print("------------------${data["filepath"]}");
+                            ref.watch(sMRProvider.notifier).refreshChat();
                             await ref
                                 .watch(sMRProvider.notifier)
                                 .getchatlist(loadedsmr[index].id, file);

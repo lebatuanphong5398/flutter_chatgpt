@@ -9,6 +9,7 @@ class ChatWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    print(msg);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [

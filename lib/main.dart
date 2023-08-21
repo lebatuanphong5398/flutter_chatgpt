@@ -41,7 +41,6 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   void changetheme() {
-    print("__________________da cheange");
     setState(() {
       isDarkmode = !isDarkmode;
     });

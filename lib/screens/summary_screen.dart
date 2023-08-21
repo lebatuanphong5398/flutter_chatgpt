@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:collection/collection.dart';
 import 'package:first_app/constants/api_consts.dart';
+import 'package:first_app/providers/chatid_provider.dart';
 import 'package:first_app/providers/summary_provider.dart';
 import 'package:first_app/screens/chat_screen.dart';
 import 'package:first_app/widgets/chat_widget.dart';
@@ -77,10 +78,10 @@ class _SummaryScreenState extends ConsumerState<SummaryScreen> {
   late TextEditingController textEditingController;
   late ScrollController _listScrollController;
   late FocusNode focusNode;
-  String chatid = uuid.v4();
 
   @override
   void initState() {
+    setState(() {});
     _listScrollController = ScrollController();
     textEditingController = TextEditingController();
     focusNode = FocusNode();
@@ -181,6 +182,7 @@ class _SummaryScreenState extends ConsumerState<SummaryScreen> {
                     padding: const EdgeInsets.only(top: 10.0),
                     child: ChatWidget(
                       msg: smrprovider[index].msg,
+
                       // chatList[index].msg,
                       chatIndex: smrprovider[index].chatIndex,
                       //chatList[index].chatIndex,
@@ -294,16 +296,17 @@ class _SummaryScreenState extends ConsumerState<SummaryScreen> {
       String msg = textEditingController.text;
       setState(() {
         isTyping = true;
-        ref
-            .watch(sMRProvider.notifier)
-            .addUserMessage(msg: msg, chatid: chatid, file: File(file!.path!));
+        ref.watch(sMRProvider.notifier).addUserMessage(
+            msg: msg,
+            chatid: ref.watch(chatidProvider),
+            file: File(file!.path!));
         textEditingController.clear();
         focusNode.unfocus();
       });
 
       await ref.watch(sMRProvider.notifier).sendMessageSMR(
             msg: msg,
-            chatid: chatid,
+            chatid: ref.watch(chatidProvider),
             file: File(file!.path!),
             retrievalQA: retrievalQA!,
           );

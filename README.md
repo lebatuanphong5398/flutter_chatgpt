@@ -14,7 +14,7 @@ Welcome to the GPT-3.5 Powered Chatbox project! This Flutter application leverag
 
 | Video                                        | Home Screen                                  | Chat Screen                                  |
 |----------------------------------------------|----------------------------------------------|----------------------------------------------|
-| (https://github.com/lebatuanphong5398/flutter_chatgpt/blob/6907feb262d6841e7fda9bf88673ca03490574df/assets/screen/video.mp4)      | ![Home Screen](assets/screen/home_screen.jpg)| ![chat](assets/screen/chat.jpg)              |
+| https://github.com/lebatuanphong5398/flutter_chatgpt/blob/6907feb262d6841e7fda9bf88673ca03490574df/assets/screen/video.mp4      | ![Home Screen](assets/screen/home_screen.jpg)| ![chat](assets/screen/chat.jpg)              |
 
 | Image Screen                                 | Chat History                                 | Summary screen                                |
 |----------------------------------------------|----------------------------------------------|----------------------------------------------|

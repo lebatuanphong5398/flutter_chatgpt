@@ -11,11 +11,12 @@ Welcome to the GPT-3.5 Powered Chatbox project! This Flutter application leverag
 - **Firebase Integration:** Store chat histories and summaries in Firebase Firestore for seamless synchronization.
 - **State Management:** Utilize the Provider package for efficient state management.
 ## Screenshots
-
-https://github.com/lebatuanphong5398/flutter_chatgpt/blob/master/assets/screen/video.mp4
+https://github.com/lebatuanphong5398/flutter_chatgpt/assets/133201252/3e7658e2-48ab-43b8-b74a-9e935205ce36
 | Home Screen                                  | Chat Screen                                  |
 |----------------------------------------------|----------------------------------------------|
 | ![Home Screen](assets/screen/home_screen.jpg)| ![chat](assets/screen/chat.jpg)              |
+
+
 
 | Image Screen                                 | Chat History                                 | Summary screen                                |
 |----------------------------------------------|----------------------------------------------|----------------------------------------------|

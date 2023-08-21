@@ -25,7 +25,7 @@ To experience the power of the GPT-3.5 Chatbox on your local machine, follow the
 3. Install dependencies: `flutter pub get`
 4. [Set up Firebase](#Setting-up-Firebase)
 5. Run the app: `flutter run`
-
+<a name="Setting-up-Firebase"></a>
 ### Setting up Firebase 
 
    This chatbox project integrates with Firebase for real-time chat history and summaries. Here's how to set up Firebase for your project:
@@ -59,7 +59,7 @@ To experience the power of the GPT-3.5 Chatbox on your local machine, follow the
 
 
 ## Technologies Used
-<a name="Setting-up-Firebase"></a>
+
 - Flutter: A versatile UI toolkit for crafting natively compiled applications.
 - OpenAI GPT-3.5 API: Powering the natural language interactions within the chatbox.
 - Firebase: Providing backend services including authentication and Firestore database.

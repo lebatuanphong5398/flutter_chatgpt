@@ -23,11 +23,10 @@ To experience the power of the GPT-3.5 Chatbox on your local machine, follow the
 1. Clone this repository: `https://github.com/lebatuanphong5398/flutter_chatgpt.git`
 2. Navigate to the project directory: `cd flutter_chatgpt`
 3. Install dependencies: `flutter pub get`
-4. Set up Firebase:
-   - I have dedicated a separate section below for detailed instructions.
+4. [Set up Firebase](#Setting-up-Firebase)
 5. Run the app: `flutter run`
-
-### Setting up Firebase
+<a name="Setting-up-Firebase"></a>
+### Setting up Firebase 
 
    This chatbox project integrates with Firebase for real-time chat history and summaries. Here's how to set up Firebase for your project:
    
